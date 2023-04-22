@@ -5,15 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.math.BigDecimal;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class GetProductParameters {
-
-    private int brandId;
-    private int productId;
-    private Instant timestamp;
+@AllArgsConstructor
+public class Money {
+    private BigDecimal amount;
+    private String currency;
 }

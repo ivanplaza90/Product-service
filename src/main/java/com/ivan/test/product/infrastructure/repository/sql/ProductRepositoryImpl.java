@@ -1,0 +1,24 @@
+package com.ivan.test.product.infrastructure.repository.sql;
+
+import com.ivan.test.product.domain.ProductRepository;
+import com.ivan.test.product.domain.model.GetProductParameters;
+import com.ivan.test.product.domain.model.Product;
+import com.ivan.test.product.infrastructure.repository.sql.mapper.EntityMapper;
+
+import java.sql.Date;
+import java.util.Optional;
+
+public class ProductRepositoryImpl implements ProductRepository {
+
+    private ProductJpaRepository productJpaRepository;
+    private EntityMapper entityMapper;
+
+
+    @Override
+    public Optional<Product> find(GetProductParameters getProductParameters) {
+        return productJpaRepository
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+                getProductParameters.getProductId(), getProductParameters.getBrandId(), getProductParameters.getTimestamp(), getProductParameters.getTimestamp())
+            .map(entityMapper::mapToProduct);
+    }
+}
