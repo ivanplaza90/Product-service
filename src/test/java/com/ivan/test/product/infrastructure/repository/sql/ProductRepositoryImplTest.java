@@ -51,7 +51,7 @@ class ProductRepositoryImplTest {
         final RuntimeException jpaRepositoryException = new RuntimeException("UNIT TEST");
 
         given(productJpaRepository
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                 PRODUCT_ID, BRAND_ID, TIMESTAMP, TIMESTAMP)).willThrow(jpaRepositoryException);
 
         //WHEN
@@ -61,7 +61,7 @@ class ProductRepositoryImplTest {
         assertThat(throwable).isNotNull()
                         .isEqualTo(jpaRepositoryException);
         then(productJpaRepository).should()
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
     }
 
     @Test
@@ -70,7 +70,7 @@ class ProductRepositoryImplTest {
         assertThat(productRepositoryImpl).isNotNull();
 
         given(productJpaRepository
-                .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+                .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                         PRODUCT_ID, BRAND_ID, TIMESTAMP, TIMESTAMP)).willReturn(Optional.empty());
 
         //WHEN
@@ -79,7 +79,7 @@ class ProductRepositoryImplTest {
         //THEN
         assertThat(response).isNotNull().isEmpty();
         then(productJpaRepository).should()
-                .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
+                .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
     }
 
     @Test
@@ -89,7 +89,7 @@ class ProductRepositoryImplTest {
         final ProductEntity storedProduct = mockProductEntity();
 
         given(productJpaRepository
-                .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+                .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                         PRODUCT_ID, BRAND_ID, TIMESTAMP, TIMESTAMP)).willReturn(Optional.of(storedProduct));
 
         //WHEN
@@ -107,7 +107,7 @@ class ProductRepositoryImplTest {
             .hasFieldOrPropertyWithValue("price.currency", EUR_CURRENCY);
 
         then(productJpaRepository).should()
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
         then(entityMapper).should().mapToProduct(eq(storedProduct));
     }
 

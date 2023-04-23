@@ -7,7 +7,6 @@ import com.ivan.test.product.infrastructure.repository.sql.mapper.EntityMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.util.Optional;
 
 
@@ -22,7 +21,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Optional<Product> find(GetProductParameters getProductParameters) {
         return productJpaRepository
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                 getProductParameters.getProductId(), getProductParameters.getBrandId(), getProductParameters.getTimestamp(), getProductParameters.getTimestamp())
             .map(entityMapper::mapToProduct);
     }
