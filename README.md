@@ -14,7 +14,7 @@ Execute the `main` method in the `com.ivan.test.product.ProductServiceApplicatio
 ## Change Log
 
 ## Version 0.1.0-SNAPSHOT
-* Todo
+* Add get product rest endpoint
 
 ## Version 0.0.0.RELEASE
 * Empty spring boot service
