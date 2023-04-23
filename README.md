@@ -13,6 +13,8 @@ Execute the `main` method in the `com.ivan.test.product.ProductServiceApplicatio
 
 ## Change Log
 
+## Version 0.2.0-SNAPSHOT
+
 ## Version 0.1.0.RELEASE
 * Add get product rest endpoint
 
