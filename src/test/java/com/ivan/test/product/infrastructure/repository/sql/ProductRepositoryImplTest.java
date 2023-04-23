@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -69,7 +68,6 @@ class ProductRepositoryImplTest {
     void should_return_empty_given_get_product_parameters_when_jpa_repository_returns_empty() {
         //GIVEN
         assertThat(productRepositoryImpl).isNotNull();
-        final RuntimeException jpaRepositoryException = new RuntimeException("UNIT TEST");
 
         given(productJpaRepository
                 .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
