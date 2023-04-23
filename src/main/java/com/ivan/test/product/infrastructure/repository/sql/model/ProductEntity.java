@@ -5,12 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "PRODUCT")
@@ -27,9 +25,12 @@ public class ProductEntity {
     @Column(name = "BRAND_ID")
     private int brandId;
     @Column(name = "START_DATE")
-    private Instant startDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startDate;
+
     @Column(name = "END_DATE")
-    private Instant endDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endDate;
     @Column(name = "PRICE_LIST")
     private int priceList;
     @Column(name = "PRIORITY")

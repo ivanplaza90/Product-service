@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -22,7 +23,7 @@ public class ProductController {
     @GetMapping("api/product")
     public Map<String, Object> getProduct(@RequestParam("productId") Integer productId,
                                           @RequestParam("brandId") Integer brandId,
-                                          @RequestParam("timestamp") Long timestamp) {
+                                          @RequestParam("timestamp") String timestamp) {
         try{
             return restMapper.mapToProductResponse(
                 getProduct.apply(

@@ -18,7 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -30,9 +31,10 @@ class ProductControllerTest {
 
     private static final int PRODUCT_ID = 1;
     private static final int BRAND_ID = 2;
-    private static final Instant TIMESTAMP = Instant.ofEpochMilli(1655200800000L);
-    private static final Instant START_DATE = Instant.ofEpochMilli(1682179142000L);
-    private static final Instant END_DATE = Instant.ofEpochMilli(1682179166000L);
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+    public static final String TIMESTAMP = "2020-06-14-00.00.00";
+    public static final String START_DATE = "2020-06-14-00.00.00";
+    public static final String END_DATE = "2020-12-31-23.59.59";
     private static final int PRICE_LIST = 1;
     private static final int PRIORITY = 5;
     private static final Money PRICE = Money.builder().amount(BigDecimal.valueOf(35.75)).currency("EUR").build();
@@ -46,7 +48,7 @@ class ProductControllerTest {
     private ProductController productController;
 
     @Test
-    void should_return_internal_server_error_given_a_request_when_get_product_uses_case_throws_not_managed_exception() {
+    void should_return_internal_server_error_given_a_request_when_get_product_uses_case_throws_not_managed_exception() throws ParseException {
         //GIVEN
         assertThat(productController).isNotNull();
         final ArgumentCaptor<GetProductParameters> argumentCaptor = ArgumentCaptor.forClass(GetProductParameters.class);
@@ -55,21 +57,21 @@ class ProductControllerTest {
                 .willThrow(new RuntimeException("UNIT TEST"));
 
         //WHEN
-        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP.toEpochMilli()));
+        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP));
 
         //THEN
         assertThat(throwable).isNotNull()
             .isInstanceOf(ResponseStatusException.class)
             .hasFieldOrPropertyWithValue("status", HttpStatus.INTERNAL_SERVER_ERROR);
 
-        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP.toEpochMilli()));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
         then(getProduct).should().apply(argumentCaptor.capture());
 
         assertGetProductParameters(argumentCaptor.getValue());
     }
 
     @Test
-    void should_return_not_found_error_given_a_request_when_get_product_uses_case_throws_product_not_found_exception() {
+    void should_return_not_found_error_given_a_request_when_get_product_uses_case_throws_product_not_found_exception() throws ParseException {
         //GIVEN
         assertThat(productController).isNotNull();
         final ArgumentCaptor<GetProductParameters> argumentCaptor = ArgumentCaptor.forClass(GetProductParameters.class);
@@ -78,21 +80,21 @@ class ProductControllerTest {
                 .willThrow(new ProductNotFoundException("UNIT TEST"));
 
         //WHEN
-        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP.toEpochMilli()));
+        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP));
 
         //THEN
         assertThat(throwable).isNotNull()
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
 
-        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP.toEpochMilli()));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
         then(getProduct).should().apply(argumentCaptor.capture());
 
         assertGetProductParameters(argumentCaptor.getValue());
     }
 
     @Test
-    void should_return_a_product_given_a_request_when_get_product_uses_case_returns_a_product() {
+    void should_return_a_product_given_a_request_when_get_product_uses_case_returns_a_product() throws ParseException {
         //GIVEN
         assertThat(productController).isNotNull();
         final ArgumentCaptor<GetProductParameters> argumentCaptor = ArgumentCaptor.forClass(GetProductParameters.class);
@@ -102,39 +104,39 @@ class ProductControllerTest {
             .willReturn(product);
 
         //WHEN
-        final Map<String, Object> response = productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP.toEpochMilli());
+        final Map<String, Object> response = productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP);
 
         //THEN
         assertThat(response).isNotNull()
             .hasFieldOrPropertyWithValue("productId", PRODUCT_ID)
             .hasFieldOrPropertyWithValue("brandId", BRAND_ID)
-            .hasFieldOrPropertyWithValue("startDate", START_DATE)
-            .hasFieldOrPropertyWithValue("endDate", END_DATE)
+            .hasFieldOrPropertyWithValue("startDate", DATE_FORMAT.parse(START_DATE))
+            .hasFieldOrPropertyWithValue("endDate", DATE_FORMAT.parse(END_DATE))
             .hasFieldOrPropertyWithValue("priceList", PRICE_LIST)
             .hasFieldOrPropertyWithValue("priority", PRIORITY)
             .hasFieldOrPropertyWithValue("price.amount", PRICE.getAmount())
             .hasFieldOrPropertyWithValue("price.currency", PRICE.getCurrency());
 
-        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP.toEpochMilli()));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
         then(getProduct).should().apply(argumentCaptor.capture());
         then(restMapper).should().mapToProductResponse(eq(product));
 
         assertGetProductParameters(argumentCaptor.getValue());
     }
 
-    private static void assertGetProductParameters(GetProductParameters parameters) {
+    private static void assertGetProductParameters(GetProductParameters parameters) throws ParseException {
         assertThat(parameters).isNotNull()
             .hasFieldOrPropertyWithValue("productId", PRODUCT_ID)
             .hasFieldOrPropertyWithValue("brandId", BRAND_ID)
-            .hasFieldOrPropertyWithValue("timestamp", TIMESTAMP);
+            .hasFieldOrPropertyWithValue("timestamp", DATE_FORMAT.parse(TIMESTAMP));
     }
 
-    private Product mockProduct() {
+    private Product mockProduct() throws ParseException {
         return Product.builder()
                 .productId(PRODUCT_ID)
                 .brandId(BRAND_ID)
-                .startDate(START_DATE)
-                .endDate(END_DATE)
+                .startDate(DATE_FORMAT.parse(START_DATE))
+                .endDate(DATE_FORMAT.parse(END_DATE))
                 .priceList(PRICE_LIST)
                 .priority(PRIORITY)
                 .price(PRICE)

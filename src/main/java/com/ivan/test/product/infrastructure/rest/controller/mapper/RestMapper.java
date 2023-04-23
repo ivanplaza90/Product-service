@@ -4,8 +4,12 @@ import com.ivan.test.product.domain.model.GetProductParameters;
 import com.ivan.test.product.domain.model.Money;
 import com.ivan.test.product.domain.model.Product;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.time.Instant;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import static org.mapstruct.InjectionStrategy.CONSTRUCTOR;
@@ -13,12 +17,18 @@ import static org.mapstruct.ReportingPolicy.IGNORE;
 
 @Mapper(componentModel = "spring", injectionStrategy = CONSTRUCTOR, unmappedTargetPolicy = IGNORE)
 public interface RestMapper {
-    GetProductParameters mapToGetProductParameters(int productId, int brandId, Long timestamp);
 
-    default Instant mapToInstant(Long timestamp) {
-        if(timestamp == null)
+    SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+
+    @Mapping(target = "timestamp", source = "timestamp", qualifiedByName = "mapToDate")
+    GetProductParameters mapToGetProductParameters(int productId, int brandId, String timestamp) throws ParseException ;
+
+    @Named("mapToDate")
+    default Date mapToDate(String timestamp) throws ParseException {
+        if(timestamp == null) {
             return null;
-        return Instant.ofEpochMilli(timestamp);
+        }
+        return DATE_FORMAT.parse(timestamp);
     }
 
     default Map<String, Object> mapToProductResponse(Product product) {

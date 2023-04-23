@@ -1,6 +1,5 @@
 package com.ivan.test.product.infrastructure.rest.controller;
 
-import com.ivan.test.product.domain.ProductRepository;
 import com.ivan.test.product.infrastructure.repository.sql.ProductJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,7 +44,7 @@ class ProductControllerIT {
             .accept(MediaType.APPLICATION_JSON)
             .param("productId", "12")
             .param("brandId", "1")
-            .param("timestamp", "1655200800000"))
+            .param("timestamp", "2020-06-14-00.00.00"))
         //THEN
             .andDo(print())
             .andExpect(status().isNotFound());
@@ -61,7 +60,7 @@ class ProductControllerIT {
             .accept(MediaType.APPLICATION_JSON)
             .param("productId", "35455")
             .param("brandId", "1")
-            .param("timestamp", "1655200800000"))
+            .param("timestamp", "2020-06-14-00.00.00"))
         //THEN
             .andDo(print())
             .andExpect(status().isOk())
