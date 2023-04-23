@@ -6,7 +6,6 @@ import com.ivan.test.product.domain.model.Money;
 import com.ivan.test.product.domain.model.Product;
 import com.ivan.test.product.domain.model.ProductNotFoundException;
 import com.ivan.test.product.infrastructure.rest.controller.mapper.RestMapper;
-import com.ivan.test.product.infrastructure.rest.controller.model.GetProductRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
@@ -51,20 +50,19 @@ class ProductControllerTest {
         //GIVEN
         assertThat(productController).isNotNull();
         final ArgumentCaptor<GetProductParameters> argumentCaptor = ArgumentCaptor.forClass(GetProductParameters.class);
-        final GetProductRequest request = mockGetProductRequest();
 
         given(getProduct.apply(any(GetProductParameters.class)))
                 .willThrow(new RuntimeException("UNIT TEST"));
 
         //WHEN
-        final Throwable throwable = catchThrowable(() -> productController.getProduct(request));
+        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP));
 
         //THEN
         assertThat(throwable).isNotNull()
             .isInstanceOf(ResponseStatusException.class)
             .hasFieldOrPropertyWithValue("status", HttpStatus.INTERNAL_SERVER_ERROR);
 
-        then(restMapper).should().mapToGetProductParameters(eq(request));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
         then(getProduct).should().apply(argumentCaptor.capture());
 
         assertGetProductParameters(argumentCaptor.getValue());
@@ -75,20 +73,19 @@ class ProductControllerTest {
         //GIVEN
         assertThat(productController).isNotNull();
         final ArgumentCaptor<GetProductParameters> argumentCaptor = ArgumentCaptor.forClass(GetProductParameters.class);
-        final GetProductRequest request = mockGetProductRequest();
 
         given(getProduct.apply(any(GetProductParameters.class)))
                 .willThrow(new ProductNotFoundException("UNIT TEST"));
 
         //WHEN
-        final Throwable throwable = catchThrowable(() -> productController.getProduct(request));
+        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP));
 
         //THEN
         assertThat(throwable).isNotNull()
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
 
-        then(restMapper).should().mapToGetProductParameters(eq(request));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
         then(getProduct).should().apply(argumentCaptor.capture());
 
         assertGetProductParameters(argumentCaptor.getValue());
@@ -99,14 +96,13 @@ class ProductControllerTest {
         //GIVEN
         assertThat(productController).isNotNull();
         final ArgumentCaptor<GetProductParameters> argumentCaptor = ArgumentCaptor.forClass(GetProductParameters.class);
-        final GetProductRequest request = mockGetProductRequest();
         final Product product = mockProduct();
 
         given(getProduct.apply(any(GetProductParameters.class)))
             .willReturn(product);
 
         //WHEN
-        final Map<String, Object> response = productController.getProduct(request);
+        final Map<String, Object> response = productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP);
 
         //THEN
         assertThat(response).isNotNull()
@@ -119,7 +115,7 @@ class ProductControllerTest {
             .hasFieldOrPropertyWithValue("price.amount", PRICE.getAmount())
             .hasFieldOrPropertyWithValue("price.currency", PRICE.getCurrency());
 
-        then(restMapper).should().mapToGetProductParameters(eq(request));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
         then(getProduct).should().apply(argumentCaptor.capture());
         then(restMapper).should().mapToProductResponse(eq(product));
 
@@ -131,14 +127,6 @@ class ProductControllerTest {
             .hasFieldOrPropertyWithValue("productId", PRODUCT_ID)
             .hasFieldOrPropertyWithValue("brandId", BRAND_ID)
             .hasFieldOrPropertyWithValue("timestamp", TIMESTAMP);
-    }
-
-    private GetProductRequest mockGetProductRequest() {
-        return GetProductRequest.builder()
-                .productId(PRODUCT_ID)
-                .brandId(BRAND_ID)
-                .timestamp(TIMESTAMP)
-                .build();
     }
 
     private Product mockProduct() {

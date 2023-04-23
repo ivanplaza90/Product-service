@@ -3,21 +3,21 @@ package com.ivan.test.product.infrastructure.rest.controller;
 import com.ivan.test.product.application.GetProduct;
 import com.ivan.test.product.domain.model.ProductNotFoundException;
 import com.ivan.test.product.infrastructure.rest.controller.mapper.RestMapper;
-import com.ivan.test.product.infrastructure.rest.controller.model.GetProductRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.Map;
 
 public class ProductController {
 
     private RestMapper restMapper;
     private GetProduct getProduct;
-    public Map<String, Object> getProduct(GetProductRequest request) {
+    public Map<String, Object> getProduct(Integer productId, Integer brandId, Instant timestamp) {
         try{
             return restMapper.mapToProductResponse(
                 getProduct.apply(
-                restMapper.mapToGetProductParameters(request)));
+                restMapper.mapToGetProductParameters(productId, brandId, timestamp)));
         }catch (ProductNotFoundException notFoundException) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }catch (Exception e) {
