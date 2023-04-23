@@ -13,7 +13,7 @@ public class ProductController {
 
     private RestMapper restMapper;
     private GetProduct getProduct;
-    public Map<String, Object> getProduct(Integer productId, Integer brandId, Instant timestamp) {
+    public Map<String, Object> getProduct(Integer productId, Integer brandId, Long timestamp) {
         try{
             return restMapper.mapToProductResponse(
                 getProduct.apply(

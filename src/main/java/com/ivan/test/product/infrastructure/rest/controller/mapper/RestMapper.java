@@ -13,7 +13,13 @@ import static org.mapstruct.ReportingPolicy.IGNORE;
 
 @Mapper(componentModel = "spring", injectionStrategy = CONSTRUCTOR, unmappedTargetPolicy = IGNORE)
 public interface RestMapper {
-    GetProductParameters mapToGetProductParameters(int productId, int brandId, Instant timestamp);
+    GetProductParameters mapToGetProductParameters(int productId, int brandId, Long timestamp);
+
+    default Instant mapToInstant(Long timestamp) {
+        if(timestamp == null)
+            return null;
+        return Instant.ofEpochMilli(timestamp);
+    }
 
     default Map<String, Object> mapToProductResponse(Product product) {
         return Map.of(

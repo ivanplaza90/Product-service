@@ -30,7 +30,7 @@ class ProductControllerTest {
 
     private static final int PRODUCT_ID = 1;
     private static final int BRAND_ID = 2;
-    private static final Instant TIMESTAMP = Instant.now();
+    private static final Instant TIMESTAMP = Instant.ofEpochMilli(1655200800000L);
     private static final Instant START_DATE = Instant.ofEpochMilli(1682179142000L);
     private static final Instant END_DATE = Instant.ofEpochMilli(1682179166000L);
     private static final int PRICE_LIST = 1;
@@ -55,14 +55,14 @@ class ProductControllerTest {
                 .willThrow(new RuntimeException("UNIT TEST"));
 
         //WHEN
-        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP));
+        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP.toEpochMilli()));
 
         //THEN
         assertThat(throwable).isNotNull()
             .isInstanceOf(ResponseStatusException.class)
             .hasFieldOrPropertyWithValue("status", HttpStatus.INTERNAL_SERVER_ERROR);
 
-        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP.toEpochMilli()));
         then(getProduct).should().apply(argumentCaptor.capture());
 
         assertGetProductParameters(argumentCaptor.getValue());
@@ -78,14 +78,14 @@ class ProductControllerTest {
                 .willThrow(new ProductNotFoundException("UNIT TEST"));
 
         //WHEN
-        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP));
+        final Throwable throwable = catchThrowable(() -> productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP.toEpochMilli()));
 
         //THEN
         assertThat(throwable).isNotNull()
                 .isInstanceOf(ResponseStatusException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
 
-        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP.toEpochMilli()));
         then(getProduct).should().apply(argumentCaptor.capture());
 
         assertGetProductParameters(argumentCaptor.getValue());
@@ -102,7 +102,7 @@ class ProductControllerTest {
             .willReturn(product);
 
         //WHEN
-        final Map<String, Object> response = productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP);
+        final Map<String, Object> response = productController.getProduct(PRODUCT_ID, BRAND_ID, TIMESTAMP.toEpochMilli());
 
         //THEN
         assertThat(response).isNotNull()
@@ -115,7 +115,7 @@ class ProductControllerTest {
             .hasFieldOrPropertyWithValue("price.amount", PRICE.getAmount())
             .hasFieldOrPropertyWithValue("price.currency", PRICE.getCurrency());
 
-        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP));
+        then(restMapper).should().mapToGetProductParameters(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP.toEpochMilli()));
         then(getProduct).should().apply(argumentCaptor.capture());
         then(restMapper).should().mapToProductResponse(eq(product));
 
