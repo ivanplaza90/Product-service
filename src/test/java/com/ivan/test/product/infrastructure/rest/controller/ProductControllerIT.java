@@ -1,8 +1,6 @@
 package com.ivan.test.product.infrastructure.rest.controller;
 
 import com.ivan.test.product.infrastructure.repository.sql.ProductJpaRepository;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
