@@ -35,8 +35,8 @@ public interface RestMapper {
         return Map.of(
         "productId", product.getProductId(),
         "brandId", product.getBrandId(),
-        "startDate", product.getStartDate(),
-        "endDate", product.getEndDate(),
+        "startDate", product.getStartDate().toString(),
+        "endDate", product.getEndDate().toString(),
         "priceList", product.getPriceList(),
         "priority", product.getPriority(),
         "price", mapToMoneyResponse(product.getPrice())

@@ -1,6 +1,8 @@
 package com.ivan.test.product.infrastructure.rest.controller;
 
 import com.ivan.test.product.infrastructure.repository.sql.ProductJpaRepository;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +51,8 @@ class ProductControllerIT {
             .andDo(print())
             .andExpect(status().isNotFound());
     }
-
     @Test
-    void should_return_a_product_given_a_request_when_the_product_exists_on_database() throws Exception {
+    void should_return_first_product_given_a_request_when_the_product_exists_on_database() throws Exception {
         //GIVEN
 
         //WHEN
@@ -66,11 +67,11 @@ class ProductControllerIT {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.productId").value(35455))
             .andExpect(jsonPath("$.brandId").value(1))
-            .andExpect(jsonPath("startDate").value("2020-06-14T15:00:00Z"))
-            .andExpect(jsonPath("endDate").value("2020-06-14T18:30:00Z"))
-            .andExpect(jsonPath("priority").value(1))
-            .andExpect(jsonPath("price.amount").value(25.45))
+            .andExpect(jsonPath("startDate").value("2020-06-14 00:00:00.0"))
+            .andExpect(jsonPath("endDate").value("2020-12-31 23:59:59.0"))
+            .andExpect(jsonPath("priority").value(0))
+            .andExpect(jsonPath("price.amount").value(35.50))
             .andExpect(jsonPath("price.currency").value("EUR"))
-            .andExpect(jsonPath("priceList").value(2));
+            .andExpect(jsonPath("priceList").value(1));
     }
 }
