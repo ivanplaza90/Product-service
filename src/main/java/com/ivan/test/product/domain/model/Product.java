@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Builder
@@ -15,8 +15,8 @@ public class Product {
 
     private int productId;
     private int brandId;
-    private Instant startDate;
-    private Instant endDate;
+    private Date startDate;
+    private Date endDate;
     private int priceList;
     private int priority;
     private Money price;

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Builder
@@ -15,5 +15,5 @@ public class GetProductParameters {
 
     private int brandId;
     private int productId;
-    private Instant timestamp;
+    private Date timestamp;
 }

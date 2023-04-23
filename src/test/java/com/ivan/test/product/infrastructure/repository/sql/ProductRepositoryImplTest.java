@@ -13,7 +13,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
@@ -28,13 +29,14 @@ class ProductRepositoryImplTest {
 
     private static final int PRODUCT_ID = 1;
     private static final int BRAND_ID = 2;
-    private static final Instant TIMESTAMP = Instant.now();
-    private static final Instant START_DATE = Instant.ofEpochMilli(1682179142000L);
-    private static final Instant END_DATE = Instant.ofEpochMilli(1682179166000L);
+    private static final Date TIMESTAMP = new Date();
     private static final int PRICE_LIST = 1;
     private static final int PRIORITY = 5;
     private static final String EUR_CURRENCY = "EUR";
     private static final BigDecimal PRICE = BigDecimal.valueOf(35.75);
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+    public static final String START_DATE = "2020-06-14-00.00.00";
+    public static final String END_DATE = "2020-12-31-23.59.59";
 
     @Mock
     private ProductJpaRepository productJpaRepository;
@@ -52,7 +54,7 @@ class ProductRepositoryImplTest {
         final RuntimeException jpaRepositoryException = new RuntimeException("UNIT TEST");
 
         given(productJpaRepository
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                 PRODUCT_ID, BRAND_ID, TIMESTAMP, TIMESTAMP)).willThrow(jpaRepositoryException);
 
         //WHEN
@@ -62,17 +64,16 @@ class ProductRepositoryImplTest {
         assertThat(throwable).isNotNull()
                         .isEqualTo(jpaRepositoryException);
         then(productJpaRepository).should()
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
     }
 
     @Test
     void should_return_empty_given_get_product_parameters_when_jpa_repository_returns_empty() {
         //GIVEN
         assertThat(productRepositoryImpl).isNotNull();
-        final RuntimeException jpaRepositoryException = new RuntimeException("UNIT TEST");
 
         given(productJpaRepository
-                .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+                .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                         PRODUCT_ID, BRAND_ID, TIMESTAMP, TIMESTAMP)).willReturn(Optional.empty());
 
         //WHEN
@@ -81,17 +82,17 @@ class ProductRepositoryImplTest {
         //THEN
         assertThat(response).isNotNull().isEmpty();
         then(productJpaRepository).should()
-                .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
+                .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
     }
 
     @Test
-    void should_return_a_product_given_get_product_parameters_when_jpa_repository_returns_a_result() {
+    void should_return_a_product_given_get_product_parameters_when_jpa_repository_returns_a_result() throws ParseException {
         //GIVEN
         assertThat(productRepositoryImpl).isNotNull();
         final ProductEntity storedProduct = mockProductEntity();
 
         given(productJpaRepository
-                .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(
+                .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(
                         PRODUCT_ID, BRAND_ID, TIMESTAMP, TIMESTAMP)).willReturn(Optional.of(storedProduct));
 
         //WHEN
@@ -101,15 +102,15 @@ class ProductRepositoryImplTest {
         assertThat(response).isNotNull().isNotEmpty().get()
             .hasFieldOrPropertyWithValue("productId", PRODUCT_ID)
             .hasFieldOrPropertyWithValue("brandId", BRAND_ID)
-            .hasFieldOrPropertyWithValue("startDate", START_DATE)
-            .hasFieldOrPropertyWithValue("endDate", END_DATE)
+            .hasFieldOrPropertyWithValue("startDate", DATE_FORMAT.parse(START_DATE))
+            .hasFieldOrPropertyWithValue("endDate", DATE_FORMAT.parse(END_DATE))
             .hasFieldOrPropertyWithValue("priceList", PRICE_LIST)
             .hasFieldOrPropertyWithValue("priority", PRIORITY)
             .hasFieldOrPropertyWithValue("price.amount", PRICE)
             .hasFieldOrPropertyWithValue("price.currency", EUR_CURRENCY);
 
         then(productJpaRepository).should()
-            .findFirstByProductIdAndBrandIdAndStartDateLessThanAndEndDateLessThanOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
+            .findFirstByProductIdAndBrandIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByPriorityDesc(eq(PRODUCT_ID), eq(BRAND_ID), eq(TIMESTAMP), eq(TIMESTAMP));
         then(entityMapper).should().mapToProduct(eq(storedProduct));
     }
 
@@ -121,12 +122,12 @@ class ProductRepositoryImplTest {
             .build();
     }
 
-    private ProductEntity mockProductEntity() {
+    private ProductEntity mockProductEntity() throws ParseException {
         return ProductEntity.builder()
             .productId(PRODUCT_ID)
             .brandId(BRAND_ID)
-            .startDate(START_DATE)
-            .endDate(END_DATE)
+            .startDate(DATE_FORMAT.parse(START_DATE))
+            .endDate(DATE_FORMAT.parse(END_DATE))
             .priceList(PRICE_LIST)
             .priority(PRIORITY)
             .price(PRICE)
