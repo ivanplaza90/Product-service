@@ -61,7 +61,7 @@ class ProductControllerIT {
             .accept(MediaType.APPLICATION_JSON)
             .param("productId", "35455")
             .param("brandId", "1")
-            .param("timestamp", "2020-06-14-00.00.00"))
+            .param("timestamp", "2020-06-14-10.00.00"))
         //THEN
             .andDo(print())
             .andExpect(status().isOk())
@@ -73,5 +73,101 @@ class ProductControllerIT {
             .andExpect(jsonPath("price.amount").value(35.50))
             .andExpect(jsonPath("price.currency").value("EUR"))
             .andExpect(jsonPath("priceList").value(1));
+    }
+
+    @Test
+    void should_return_second_product_given_a_request_when_the_product_exists_on_database() throws Exception {
+        //GIVEN
+
+        //WHEN
+        mockMvc.perform(get("/api/product")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .param("productId", "35455")
+            .param("brandId", "1")
+            .param("timestamp", "2020-06-14-16.00.00"))
+        //THEN
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.productId").value(35455))
+            .andExpect(jsonPath("$.brandId").value(1))
+            .andExpect(jsonPath("startDate").value("2020-06-14 15:00:00.0"))
+            .andExpect(jsonPath("endDate").value("2020-06-14 18:30:00.0"))
+            .andExpect(jsonPath("priority").value(1))
+            .andExpect(jsonPath("price.amount").value(25.45))
+            .andExpect(jsonPath("price.currency").value("EUR"))
+            .andExpect(jsonPath("priceList").value(2));
+    }
+
+    @Test
+    void should_return_first_product_given_a_request_when_there_are_not_another_available_product() throws Exception {
+        //GIVEN
+
+        //WHEN
+        mockMvc.perform(get("/api/product")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .param("productId", "35455")
+            .param("brandId", "1")
+            .param("timestamp", "2020-06-14-21.00.00"))
+        //THEN
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.productId").value(35455))
+            .andExpect(jsonPath("$.brandId").value(1))
+            .andExpect(jsonPath("startDate").value("2020-06-14 00:00:00.0"))
+            .andExpect(jsonPath("endDate").value("2020-12-31 23:59:59.0"))
+            .andExpect(jsonPath("priority").value(0))
+            .andExpect(jsonPath("price.amount").value(35.50))
+            .andExpect(jsonPath("price.currency").value("EUR"))
+            .andExpect(jsonPath("priceList").value(1));
+    }
+
+    @Test
+    void should_return_third_product_given_a_request_when_there_are_not_another_available_product() throws Exception {
+        //GIVEN
+
+        //WHEN
+        mockMvc.perform(get("/api/product")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .param("productId", "35455")
+            .param("brandId", "1")
+            .param("timestamp", "2020-06-15-10.00.00"))
+        //THEN
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.productId").value(35455))
+            .andExpect(jsonPath("$.brandId").value(1))
+            .andExpect(jsonPath("startDate").value("2020-06-15 00:00:00.0"))
+            .andExpect(jsonPath("endDate").value("2020-06-15 11:00:00.0"))
+            .andExpect(jsonPath("priority").value(1))
+            .andExpect(jsonPath("price.amount").value(30.50))
+            .andExpect(jsonPath("price.currency").value("EUR"))
+            .andExpect(jsonPath("priceList").value(3));
+    }
+
+    @Test
+    void should_return_fourth_product_given_a_request_when_there_are_not_another_available_product() throws Exception {
+        //GIVEN
+
+        //WHEN
+        mockMvc.perform(get("/api/product")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .param("productId", "35455")
+            .param("brandId", "1")
+            .param("timestamp", "2020-06-15-21.00.00"))
+        //THEN
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.productId").value(35455))
+            .andExpect(jsonPath("$.brandId").value(1))
+            .andExpect(jsonPath("startDate").value("2020-06-15 16:00:00.0"))
+            .andExpect(jsonPath("endDate").value("2020-12-31 23:59:59.0"))
+            .andExpect(jsonPath("priority").value(1))
+            .andExpect(jsonPath("price.amount").value(38.95))
+            .andExpect(jsonPath("price.currency").value("EUR"))
+            .andExpect(jsonPath("priceList").value(4));
     }
 }
